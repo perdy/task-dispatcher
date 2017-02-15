@@ -1,0 +1,8 @@
+include LICENSE
+include CHANGELOG
+include README.rst
+include CONTRIBUTORS.rst
+include requirements.txt
+recursive-include status *
+prune task_dispatcher/static/scss
+prune task_dispatcher/static/js
