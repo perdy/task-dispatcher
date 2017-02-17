@@ -11,20 +11,19 @@ Library that provides a system to generate tasks producers and consumers with ea
 Celery is used as backend, so it's necessary to configure it in the application where this library will be used.
 
 To achieve a producer-consumer behavior this library provides an easy to use script for running all necessary processes:
-* **Producer**: Tasks in charge of generating processing units.
-* **Consumer**: Tasks that handle and run processing units.
-* **Scheduler**: Manager that runs producer tasks according to specified dates or regularity.
+
+  - **Producer**: Tasks in charge of generating processing units.
+  - **Consumer**: Tasks that handle and run processing units.
+  - **Scheduler**: Manager that runs producer tasks according to specified dates or regularity.
 
 Quick start
 ===========
 
-#. Install this package using pip:
-.. code-block::
+1. Install this package using pip::
 
     pip install task-dispatcher
 
-#. Decorate your functions as producer and consumer tasks:
-.. code-block::
+2. Decorate your functions as producer and consumer tasks::
 
     from task_dispatcher import consumer, producer
 
@@ -39,8 +38,7 @@ Quick start
         for i in range(n):
             square.delay(i)
 
-#. Run producer, consumer and scheduler processes:
-.. code-block:: bash
+3. Run producer, consumer and scheduler processes::
 
     python task-dispatcher producer
     python task-dispatcher consumer
@@ -58,8 +56,7 @@ Register
 ========
 
 Consumer and producer tasks are registered to ease the way of access them. There is a register module that contains the
-task register where all tasks can be found:
-.. code-block::
+task register where all tasks can be found::
 
     from task_dispatcher import register
 
@@ -70,8 +67,7 @@ task register where all tasks can be found:
     register.producers
 
 
-Also, this register provides a set of utilities, such as convert it into JSON or YAML format:
-.. code-block::
+Also, this register provides a set of utilities, such as convert it into JSON or YAML format::
 
     from task_dispatcher import register
 
@@ -82,13 +78,11 @@ Command Line Interface
 ======================
 
 There is a script that can be called directly through executing the task_dispatcher package itself or the command
-located in commands module. To show command help:
-.. code-block:: bash
+located in commands module. To show command help::
 
     python task-dispatcher -h
 
-This script also gives a friendly way of list all tasks registered:
-.. code-block:: bash
+This script also gives a friendly way of list all tasks registered::
 
     python task-dispatcher list
 
