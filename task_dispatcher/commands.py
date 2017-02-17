@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from argparse import ArgumentParser
+from typing import Dict, Any
 
 from celery import current_app
 from celery.bin.beat import beat as beat_bin
@@ -27,7 +29,7 @@ class TaskDispatcherCommand:
         """
         self.args = self.parse_arguments() if parse_args else {}
 
-    def parse_arguments(self):
+    def parse_arguments(self) -> Dict[str, Any]:
         """
         Parse sys args and transform it into a dict.
 
@@ -68,20 +70,20 @@ class TaskDispatcherCommand:
         parser_register.add_argument('-f', '--format', choices=self.LIST_CHOICES, default=self.LIST_YAML)
         parser_register.set_defaults(func=self.list)
 
-    def consumer(self, *args, **kwargs):
+    def consumer(self, *args, **kwargs) -> int:
         """
         Run a consumer process.
         """
-        kwargs['queues'] = kwargs.get('queues', ['consumer'])
+        kwargs['queues'] = kwargs['queues'] or ['consumer']
         worker = current_app.Worker(**kwargs)
         worker.start()
         return worker.exitcode
 
-    def producer(self, *args, **kwargs):
+    def producer(self, *args, **kwargs) -> int:
         """
         Run a producer process.
         """
-        kwargs['queues'] = kwargs.get('queues', ['producer'])
+        kwargs['queues'] = kwargs['queues'] or ['producer']
         worker = current_app.Worker(**kwargs)
         worker.start()
         return worker.exitcode
@@ -109,8 +111,8 @@ class TaskDispatcherCommand:
         kwargs = kwargs or self.args
 
         if not kwargs:
-            raise ValueError("Arguments must be passed or parsed previously")
+            raise ValueError('Arguments must be passed or parsed previously')
 
         command = kwargs['func']
 
-        command(**kwargs)
+        return command(**kwargs)

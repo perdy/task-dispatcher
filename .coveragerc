@@ -10,6 +10,8 @@ omit =
     *manage.py
     *wsgi.py
     *celery.py
+    *apps.py
+    task_dispatcher/management/commands/task_dispatcher.py
 
 [report]
 exclude_lines =
@@ -27,6 +29,7 @@ exclude_lines =
     if settings\.DEBUG
 
 ignore_errors = True
+show_missing = True
 
 [paths]
 source =

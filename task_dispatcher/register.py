@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import json
+from collections import OrderedDict
 
 import yaml
 
@@ -11,12 +13,15 @@ class Register(dict):
     """
     def __setitem__(self, key, value):
         if key in self:
-            raise KeyError(f"{key} is already registered")
+            raise KeyError('{} is already registered'.format(key))
 
         dict.__setitem__(self, key, value)
 
     def __repr__(self):
         return dict.__repr__(self)
+
+    def __str__(self):
+        return dict.__str__(self)
 
 
 class TaskRegister:
@@ -64,7 +69,7 @@ class TaskRegister:
         """
         return self._consumers
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """
         Transform the task register to a dictionary.
 
@@ -77,12 +82,12 @@ class TaskRegister:
                 'name': task.__qualname__,
             }
 
-        return {
-            'Producers': {k: get_description(v) for k, v in self._producers.items()},
-            'Consumers': {k: get_description(v) for k, v in self._consumers.items()},
-        }
+        return OrderedDict([
+            ('consumers', {k: get_description(v) for k, v in self._consumers.items()}),
+            ('producers', {k: get_description(v) for k, v in self._producers.items()}),
+        ])
 
-    def to_json(self):
+    def to_json(self) -> str:
         """
         Transform the task register to a JSON string.
 
@@ -90,13 +95,13 @@ class TaskRegister:
         """
         return json.dumps(self.to_dict())
 
-    def to_yaml(self):
+    def to_yaml(self) -> str:
         """
         Transform the task register to a YAML string.
 
         :return: Task register transformed.
         """
-        return yaml.dump(self.to_dict(), default_flow_style=False)
+        return yaml.dump(dict(self.to_dict()), default_flow_style=False)
 
 
 register = TaskRegister()

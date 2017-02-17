@@ -10,6 +10,7 @@ ignore-paths:
   - docs
   - demo
   - build
+  - tests
 
-ignore-patterns:
-  - .*\.feature$
+pylint:
+  run: false

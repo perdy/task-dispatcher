@@ -1,4 +1,8 @@
-from django.core.management.base import BaseCommand
+# -*- coding: utf-8 -*-
+try:
+    from django.core.management.base import BaseCommand
+except ImportError:
+    BaseCommand = object
 
 from task_dispatcher.commands import TaskDispatcherCommand
 

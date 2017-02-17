@@ -1,4 +1,7 @@
-from functools import partial, update_wrapper
+# -*- coding: utf-8 -*-
+from functools import partial
+from functools import update_wrapper
+from typing import Callable
 
 from celery import current_app
 
@@ -12,7 +15,7 @@ class BaseDecorator(object):
     Decorator that creates a Celery task of given function or class method and register it.
     """
 
-    def __init__(self, func=None, description=None, *args, **kwargs):
+    def __init__(self, func: Callable=None, description: str=None, *args, **kwargs):
         """
         Decorator that creates a Celery task of given function or class method and register it. This decorator allows
         to be used as a common decorator without arguments:
@@ -53,32 +56,43 @@ class BaseDecorator(object):
             # Partial initialization decorator
             self.task = None
 
-    def _decorate(self, func, *args, **kwargs):
+    def _decorate(self, func: Callable, *args, **kwargs):
         self.task = current_app.task(*args, **kwargs)(func)
         update_wrapper(self, func)
 
-        register.list(self)
+        register.register(self)
 
     def __get__(self, instance, owner=None):
+        """
+        Make it works with functions and methods.
+        """
         return partial(self, instance)
 
     def __getattr__(self, item):
+        """
+        Make this decorator a simple proxy for task instance.
+        """
+        # If looking for an unknown attr, delegates it to task __getattr__
         if self.task:
-            return self.task.__getattr__(item)
+            return getattr(self.task, item)
 
     def __call__(self, *args, **kwargs):
+        """
+        Redirect calls to task instance. If decorator is not fully initialized, initialize it.
+        """
         if self.task:
             # Decorator behavior
             return self.task(*args, **kwargs)
         else:
             # Decorator is not initialized and now is giving the function to be decorated
             if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
-                return self._decorate(func=args[0], *self.args, **self.kwargs)
+                self._decorate(func=args[0], *self.args, **self.kwargs)
+                return self
             else:
                 raise ValueError('Decorator is not initialized')
 
 
-class producer(BaseDecorator):
+class producer(BaseDecorator):  # noqa
     """
     Decorator that creates a Celery task of given function or class method and register it. This tasks acts as a
     producer task.
@@ -86,7 +100,7 @@ class producer(BaseDecorator):
     pass
 
 
-class consumer(BaseDecorator):
+class consumer(BaseDecorator):  # noqa
     """
     Decorator that creates a Celery task of given function or class method and register it. This tasks acts as a
     consumer task.

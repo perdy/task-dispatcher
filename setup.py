@@ -29,7 +29,6 @@ _CLASSIFIERS = (
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Natural Language :: English',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 3',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Software Development :: Object Brokering',
@@ -61,6 +60,11 @@ setup(
     ],
     include_package_data=True,
     install_requires=_REQUIRES,
+    tests_require=[
+        'nose',
+        'prospector',
+        'tox',
+    ],
     extras_require={
         'dev': [
             'setuptools',
@@ -70,10 +74,13 @@ setup(
             'twine',
             'bumpversion',
             'pre-commit',
+            'nose'
+            'tox',
         ]
     },
     license=task_dispatcher.__license__,
     zip_safe=False,
     keywords=_KEYWORDS,
     classifiers=_CLASSIFIERS,
+    test_suite='nose.collector'
 )

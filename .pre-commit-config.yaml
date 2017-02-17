@@ -23,4 +23,4 @@
     hooks:
     -   id: prospector
         args:
-        - --profile-path=.prospector.yaml
+        - --path=.
