@@ -1,2 +1,2 @@
-celery>=4.0
+Celery>=4.0
 pyyaml>=3.0

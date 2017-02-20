@@ -4,10 +4,8 @@ import os
 import sys
 
 from pip.download import PipSession
-from pip.req import parse_requirements
+from pip.req import parse_requirements as requirements
 from setuptools import setup
-
-import task_dispatcher
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,9 +13,14 @@ if sys.version_info[0] == 2:
     from codecs import open
 
 
+def parse_requirements(f):
+    return [str(r.req) for r in requirements(f, session=PipSession())]
+
 # Read requirements
 _requirements_file = os.path.join(BASE_DIR, 'requirements.txt')
-_REQUIRES = [str(r.req) for r in parse_requirements(_requirements_file, session=PipSession())]
+_tests_requirements_file = os.path.join(BASE_DIR, 'tests/requirements.txt')
+_REQUIRES = parse_requirements(_requirements_file)
+_TESTS_REQUIRES = parse_requirements(_tests_requirements_file)
 
 # Read description
 with open(os.path.join(BASE_DIR, 'README.rst'), encoding='utf-8') as f:
@@ -46,25 +49,21 @@ _KEYWORDS = ' '.join([
 
 setup(
     name='task-dispatcher',
-    version=task_dispatcher.__version__,
-    description=task_dispatcher.__description__,
+    version='1.1.0',
+    description='Library that provides a system to generate tasks producers and consumers with ease.',
     long_description=_LONG_DESCRIPTION,
-    author=task_dispatcher.__author__,
-    author_email=task_dispatcher.__email__,
-    maintainer=task_dispatcher.__author__,
-    maintainer_email=task_dispatcher.__email__,
-    url=task_dispatcher.__url__,
-    download_url=task_dispatcher.__url__,
+    author='José Antonio Perdiguero López',
+    author_email='perdy.hh@gmail.com',
+    maintainer='José Antonio Perdiguero López',
+    maintainer_email='perdy.hh@gmail.com',
+    url='https://github.com/PeRDy/task-dispatcher',
+    download_url='https://github.com/PeRDy/task-dispatcher',
     packages=[
         'task_dispatcher',
     ],
     include_package_data=True,
     install_requires=_REQUIRES,
-    tests_require=[
-        'nose',
-        'prospector',
-        'tox',
-    ],
+    tests_require=_TESTS_REQUIRES,
     extras_require={
         'dev': [
             'setuptools',
@@ -78,7 +77,7 @@ setup(
             'tox',
         ]
     },
-    license=task_dispatcher.__license__,
+    license='GPLv3',
     zip_safe=False,
     keywords=_KEYWORDS,
     classifiers=_CLASSIFIERS,

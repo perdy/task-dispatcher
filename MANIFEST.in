@@ -3,6 +3,10 @@ include CHANGELOG
 include README.rst
 include CONTRIBUTORS.rst
 include requirements.txt
-recursive-include status *
+include runtests.py
+graft task_dispatcher
+graft tests
 prune task_dispatcher/static/scss
 prune task_dispatcher/static/js
+global-exclude __pycache__
+global-exclude *.py[co]
