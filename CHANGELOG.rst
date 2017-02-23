@@ -1,5 +1,8 @@
 Changes
 =======
+v1.1.3 - 2017/02/23
+ * Move __main__ into task_dispatcher package.
+
 v1.1.2 - 2017/02/23
  * Load celery app from env variable TASK_DISPATCHER_SETTINGS.
 
