@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import sys
 
 from pip.download import PipSession
 from pip.req import parse_requirements as requirements
-from setuptools import setup
+from setuptools import setup, Command
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,6 +16,29 @@ if sys.version_info[0] == 2:
 
 def parse_requirements(f):
     return [str(r.req) for r in requirements(f, session=PipSession())]
+
+
+class Dist(Command):
+    description = 'Generate static files and create dist package'
+    user_options = [
+        ('clean', 'c', 'clean dist directories before build (default: false)')
+    ]
+    boolean_options = ['clean']
+
+    def initialize_options(self):
+        self.clean = False
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        if self.clean:
+            shutil.rmtree('build', ignore_errors=True)
+            shutil.rmtree('dist', ignore_errors=True)
+            shutil.rmtree('health_check.egg-info', ignore_errors=True)
+
+        self.run_command('sdist')
+        self.run_command('bdist_wheel')
 
 # Read requirements
 _requirements_file = os.path.join(BASE_DIR, 'requirements.txt')
@@ -85,6 +109,9 @@ setup(
     keywords=_KEYWORDS,
     classifiers=_CLASSIFIERS,
     test_suite='nose.collector',
+    cmdclass={
+        'dist': Dist,
+    },
     entry_points={
         'console_scripts': [
             'task_dispatcher = task_dispatcher.__main__:main',
