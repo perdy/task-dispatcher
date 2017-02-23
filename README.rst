@@ -91,3 +91,9 @@ Django
 
 This library can be imported and used as a Django application instead of a plain library, so that the CLI script also
 acts as a Django command.
+
+Settings
+========
+
+Celery settings can be specified through **TASK_DISPATCHER_SETTINGS** variable using path format indicated in
+`Celery application configuration <http://docs.celeryproject.org/en/latest/userguide/application.html#configuration>`_.
