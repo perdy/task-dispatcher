@@ -2,7 +2,7 @@
 Task Dispatcher
 ===============
 
-:Version: 1.1.0
+:Version: 1.1.1
 :Status: Production/Stable
 :Author: José Antonio Perdiguero López
 
