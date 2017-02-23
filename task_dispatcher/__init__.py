@@ -3,7 +3,7 @@ from task_dispatcher.celery import app
 from task_dispatcher.decorators import producer, consumer
 from task_dispatcher.register import register
 
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 __license__ = 'GPLv3'
 
 __author__ = 'José Antonio Perdiguero López'
