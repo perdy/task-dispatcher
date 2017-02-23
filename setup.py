@@ -45,6 +45,9 @@ _KEYWORDS = ' '.join([
     'database',
     'cache',
     'celery',
+    'producer',
+    'consumer',
+    'scheduler',
 ])
 
 setup(
@@ -81,5 +84,10 @@ setup(
     zip_safe=False,
     keywords=_KEYWORDS,
     classifiers=_CLASSIFIERS,
-    test_suite='nose.collector'
+    test_suite='nose.collector',
+    entry_points={
+        'console_scripts': [
+            'task_dispatcher = task_dispatcher.__main__:main',
+        ],
+    },
 )
