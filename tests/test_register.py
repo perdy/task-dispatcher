@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from collections import OrderedDict
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
@@ -57,7 +58,7 @@ class TaskRegisterTestCase(TestCase):
         consumer_mock.__module__ = 'module'
         consumer_mock.name = 'consumer_name'
 
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock:
+        with patch('task_dispatcher.decorators.app') as celery_app_mock:
             celery_app_mock.task().side_effect = [producer_mock, consumer_mock]
             cls.tasks = {
                 'producer': producer(description='description')(producer_mock),
@@ -123,7 +124,7 @@ class TaskRegisterTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_to_json(self):
-        expected_result = json.dumps({
+        expected_result = json.dumps(OrderedDict(sorted({
             'consumers': {
                 'consumer_name': {
                     'description': 'docstring',
@@ -138,7 +139,7 @@ class TaskRegisterTestCase(TestCase):
                     'name': 'qualname',
                 }
             }
-        })
+        }.items())))
 
         self.register.register(self.tasks['consumer'])
         self.register.register(self.tasks['producer'])
@@ -149,7 +150,7 @@ class TaskRegisterTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_to_yaml(self):
-        expected_result = yaml.dump({
+        expected_result = yaml.safe_dump({
             'consumers': {
                 'consumer_name': {
                     'description': 'docstring',

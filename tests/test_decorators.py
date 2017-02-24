@@ -38,7 +38,7 @@ class BaseDecoratorTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_get(self):
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock, \
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             celery_app_mock.task().return_value = self.task_mock
 
@@ -48,7 +48,7 @@ class BaseDecoratorTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_getattr_decorator_attr(self):
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock, \
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             celery_app_mock.task().return_value = self.task_mock
 
@@ -61,7 +61,7 @@ class BaseDecoratorTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_getattr_task_attr(self):
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock, \
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             celery_app_mock.task().return_value = self.task_mock
 
@@ -74,7 +74,7 @@ class BaseDecoratorTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_decorate(self):
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock, \
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             celery_app_mock.task().return_value = self.task_mock
 
@@ -87,7 +87,7 @@ class BaseDecoratorTestCase(TestCase):
     def test_call(self):
         expected_call_args = [call('foo', bar='bar')]
 
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock, \
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             # Partial initialization to pass description
             celery_app_mock.task().return_value = self.task_mock
@@ -104,7 +104,7 @@ class BaseDecoratorTestCase(TestCase):
     def test_call_not_initialized(self):
         expected_call_args = [call('foo', bar='bar')]
 
-        with patch('task_dispatcher.decorators.current_app') as celery_app_mock, \
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             # Partial initialization to pass description
             celery_app_mock.task().return_value = self.task_mock

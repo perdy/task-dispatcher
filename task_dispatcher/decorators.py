@@ -3,8 +3,7 @@ from functools import partial
 from functools import update_wrapper
 from typing import Callable
 
-from celery import current_app
-
+from task_dispatcher.celery import app
 from task_dispatcher.register import register
 
 __all__ = ['producer', 'consumer']
@@ -57,7 +56,7 @@ class BaseDecorator(object):
             self.task = None
 
     def _decorate(self, func: Callable, *args, **kwargs):
-        self.task = current_app.task(*args, **kwargs)(func)
+        self.task = app.task(*args, **kwargs)(func)
         update_wrapper(self, func)
 
         register.register(self)

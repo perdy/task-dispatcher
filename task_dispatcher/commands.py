@@ -2,10 +2,10 @@
 from argparse import ArgumentParser
 from typing import Dict, Any
 
-from celery import current_app
 from celery.bin.beat import beat as beat_bin
 from celery.bin.worker import worker as worker_bin
 
+from task_dispatcher.celery import app
 from task_dispatcher.register import register
 
 
@@ -50,7 +50,7 @@ class TaskDispatcherCommand:
         """
         subparsers = parser.add_subparsers(title='Commands', help='Task dispatcher commands')
 
-        wb = worker_bin(app=current_app)
+        wb = worker_bin(app=app)
 
         parser_consumer = subparsers.add_parser('consumer', help='Run a consumer')
         wb.add_arguments(parser_consumer)
@@ -60,7 +60,7 @@ class TaskDispatcherCommand:
         wb.add_arguments(parser_producer)
         parser_producer.set_defaults(func=self.producer)
 
-        bb = beat_bin(app=current_app)
+        bb = beat_bin(app=app)
 
         parser_scheduler = subparsers.add_parser('scheduler', help='Run the tasks scheduler')
         bb.add_arguments(parser_scheduler)
@@ -75,7 +75,7 @@ class TaskDispatcherCommand:
         Run a consumer process.
         """
         kwargs['queues'] = kwargs['queues'] or ['consumer']
-        worker = current_app.Worker(**kwargs)
+        worker = app.Worker(**kwargs)
         worker.start()
         return worker.exitcode
 
@@ -84,7 +84,7 @@ class TaskDispatcherCommand:
         Run a producer process.
         """
         kwargs['queues'] = kwargs['queues'] or ['producer']
-        worker = current_app.Worker(**kwargs)
+        worker = app.Worker(**kwargs)
         worker.start()
         return worker.exitcode
 
@@ -92,7 +92,7 @@ class TaskDispatcherCommand:
         """
         Run a scheduler process.
         """
-        beat = current_app.Beat(**kwargs)
+        beat = app.Beat(**kwargs)
         return beat.run()
 
     def list(self, *args, **kwargs):

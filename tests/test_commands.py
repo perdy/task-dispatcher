@@ -17,7 +17,7 @@ class TaskDispatcherCommandTestCase(TestCase):
         sys.argv = ['command', 'consumer']
         command = TaskDispatcherCommand()
 
-        with patch('task_dispatcher.commands.current_app') as celery_app_mock:
+        with patch('task_dispatcher.commands.app') as celery_app_mock:
             command.run()
 
         self.assertEqual(celery_app_mock.Worker.call_count, 1)
@@ -32,7 +32,7 @@ class TaskDispatcherCommandTestCase(TestCase):
         sys.argv = ['command', 'producer']
         command = TaskDispatcherCommand()
 
-        with patch('task_dispatcher.commands.current_app') as celery_app_mock:
+        with patch('task_dispatcher.commands.app') as celery_app_mock:
             command.run()
 
         self.assertEqual(celery_app_mock.Worker.call_count, 1)
@@ -44,7 +44,7 @@ class TaskDispatcherCommandTestCase(TestCase):
         sys.argv = ['command', 'scheduler']
         command = TaskDispatcherCommand()
 
-        with patch('task_dispatcher.commands.current_app') as celery_app_mock:
+        with patch('task_dispatcher.commands.app') as celery_app_mock:
             command.run()
 
         self.assertEqual(celery_app_mock.Beat.call_count, 1)
