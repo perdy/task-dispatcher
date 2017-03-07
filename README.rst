@@ -20,11 +20,13 @@ Quick start
 ===========
 
 1. Install this package using pip:
+
 .. code:: bash
 
     pip install task-dispatcher
 
 2. Decorate your functions as producer and consumer tasks:
+
 .. code:: python
 
     from task_dispatcher import consumer, producer
@@ -41,6 +43,7 @@ Quick start
             square.delay(i)
 
 3. Run producer, consumer and scheduler processes:
+
 .. code:: bash
 
     python task-dispatcher producer
@@ -60,6 +63,7 @@ Register
 
 Consumer and producer tasks are registered to ease the way of access them. There is a register module that contains the
 task register where all tasks can be found:
+
 .. code:: python
 
     from task_dispatcher import register
@@ -72,6 +76,7 @@ task register where all tasks can be found:
 
 
 Also, this register provides a set of utilities, such as convert it into JSON or YAML format:
+
 .. code:: python
 
     from task_dispatcher import register
@@ -84,11 +89,13 @@ Command Line Interface
 
 There is a script that can be called directly through executing the task_dispatcher package itself or the command
 located in commands module. To show command help:
+
 .. code:: bash
 
     python task-dispatcher -h
 
 This script also gives a friendly way of list all tasks registered:
+
 .. code:: bash
 
     python task-dispatcher list
