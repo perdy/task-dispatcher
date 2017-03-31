@@ -12,6 +12,9 @@ __all__ = ['producer', 'consumer']
 class BaseDecorator(object):
     """
     Decorator that creates a Celery task of given function or class method and register it.
+
+    When subclassing BaseDecorator, class attribute 'default_queue' can be defined to specify the default queue name
+    for the tasks being decorated.
     """
 
     def __init__(self, func: Callable=None, description: str=None, *args, **kwargs):
@@ -47,15 +50,20 @@ class BaseDecorator(object):
         self.description = description
         self.args = args
         self.kwargs = kwargs
+        self.task = None
 
         if func is not None:
             # Full initialization decorator
             self._decorate(func, *args, **kwargs)
-        else:
-            # Partial initialization decorator
-            self.task = None
 
     def _decorate(self, func: Callable, *args, **kwargs):
+        # Default name as the function's fully qualified name
+        kwargs['name'] = kwargs.get('name', '.'.join([func.__module__, func.__qualname__]))
+
+        # Default queue
+        if hasattr(self, 'default_queue'):
+            kwargs['queue'] = kwargs.get('queue', self.default_queue)
+
         self.task = app.task(*args, **kwargs)(func)
         update_wrapper(self, func)
 
@@ -74,6 +82,8 @@ class BaseDecorator(object):
         # If looking for an unknown attr, delegates it to task __getattr__
         if self.task:
             return getattr(self.task, item)
+        else:
+            raise AttributeError
 
     def __call__(self, *args, **kwargs):
         """
@@ -96,7 +106,7 @@ class producer(BaseDecorator):  # noqa
     Decorator that creates a Celery task of given function or class method and register it. This tasks acts as a
     producer task.
     """
-    pass
+    default_queue = 'producer'
 
 
 class consumer(BaseDecorator):  # noqa
@@ -104,4 +114,4 @@ class consumer(BaseDecorator):  # noqa
     Decorator that creates a Celery task of given function or class method and register it. This tasks acts as a
     consumer task.
     """
-    pass
+    default_queue = 'consumer'

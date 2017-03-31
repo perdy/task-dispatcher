@@ -74,14 +74,18 @@ class BaseDecoratorTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_decorate(self):
+        expected_task_name = '.'.join([self.task_mock.__module__, self.task_mock.__qualname__])
+
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             celery_app_mock.task().return_value = self.task_mock
 
             decorator = BaseDecorator(self.task_mock)
 
-        self.assertEqual(self.task_mock, decorator.task)
-        self.assertEqual(register_mock.register.call_count, 1)
+            self.assertEqual(self.task_mock, decorator.task)
+            self.assertEqual(register_mock.register.call_count, 1)
+            self.assertIn('name', celery_app_mock.task.call_args[1])
+            self.assertEqual(celery_app_mock.task.call_args[1]['name'], expected_task_name)
 
     @attr(priority='high', speed='fast')
     def test_call(self):
@@ -102,8 +106,6 @@ class BaseDecoratorTestCase(TestCase):
 
     @attr(priority='high', speed='fast')
     def test_call_not_initialized(self):
-        expected_call_args = [call('foo', bar='bar')]
-
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
             # Partial initialization to pass description
@@ -112,3 +114,10 @@ class BaseDecoratorTestCase(TestCase):
 
             # Try to call before full initialization
             self.assertRaises(ValueError, decorator, 'foo', bar='bar')
+
+    @attr(priority='high', speed='fast')
+    def test_getattr_without_task(self):
+        decorator = BaseDecorator()
+
+        with self.assertRaises(AttributeError):
+            _ = getattr(decorator, 'foo')
