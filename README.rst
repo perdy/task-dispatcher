@@ -2,9 +2,12 @@
 Task Dispatcher
 ===============
 
+|build-status| |coverage|
+
 :Version: 1.1.4
 :Status: Production/Stable
 :Author: José Antonio Perdiguero López
+
 
 Library that provides a system to generate tasks producers and consumers with ease.
 
@@ -111,3 +114,13 @@ Settings
 
 Celery settings can be specified through **TASK_DISPATCHER_SETTINGS** variable using path format indicated in
 `Celery application configuration <http://docs.celeryproject.org/en/latest/userguide/application.html#configuration>`_.
+
+
+.. |build-status| image:: https://travis-ci.org/PeRDy/task-dispatcher.svg?branch=master
+    :alt: build status
+    :scale: 100%
+    :target: https://travis-ci.org/PeRDy/task-dispatcher
+.. |coverage| image:: https://coveralls.io/repos/github/PeRDy/task-dispatcher/badge.svg
+    :alt: coverage
+    :scale: 100%
+    :target: https://coveralls.io/github/PeRDy/task-dispatcher
