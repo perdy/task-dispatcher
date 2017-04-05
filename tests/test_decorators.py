@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from functools import partial
 from unittest.case import TestCase
 from unittest.mock import MagicMock, patch, call
 
@@ -9,9 +8,14 @@ from nose.plugins.attrib import attr
 from task_dispatcher.decorators import BaseDecorator
 
 
+class TestMock(MagicMock):
+    def foo_method(self, x):
+        return x
+
+
 class BaseDecoratorTestCase(TestCase):
     def setUp(self):
-        self.task_mock = MagicMock(spec=Task)
+        self.task_mock = TestMock(spec=Task)
         self.task_mock.__doc__ = 'docstring'
         self.task_mock.__qualname__ = 'qualname'
         self.task_mock.__module__ = 'module'
@@ -44,7 +48,8 @@ class BaseDecoratorTestCase(TestCase):
 
             decorator = BaseDecorator(self.task_mock)
 
-        self.assertTrue(isinstance(decorator.__get__(decorator), partial))
+        self.assertTrue(isinstance(decorator.__get__(decorator), BaseDecorator))
+        self.assertEqual(decorator.instance, decorator)
 
     @attr(priority='high', speed='fast')
     def test_getattr_decorator_attr(self):
@@ -67,8 +72,22 @@ class BaseDecoratorTestCase(TestCase):
 
             decorator = BaseDecorator(description='description')(self.task_mock)
 
-        name = decorator.name
-        expected_name = 'task_name'
+        decorator.task.foo = 'bar'
+        name = decorator.foo
+        expected_name = 'bar'
+
+        self.assertEqual(expected_name, name)
+
+    @attr(priority='high', speed='fast')
+    def test_getattr_task_method(self):
+        with patch('task_dispatcher.decorators.app') as celery_app_mock, \
+                patch('task_dispatcher.decorators.register') as register_mock:
+            celery_app_mock.task().return_value = self.task_mock
+
+            decorator = BaseDecorator(description='description')(self.task_mock)
+
+        name = decorator.foo_method('bar')
+        expected_name = 'bar'
 
         self.assertEqual(expected_name, name)
 

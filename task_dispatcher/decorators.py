@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import inspect
 from functools import partial
 from functools import update_wrapper
 from typing import Callable
@@ -83,10 +84,12 @@ class BaseDecorator(object):
         """
         # If looking for an unknown attr, delegates it to task __getattr__
         if self.task:
-            if self.instance:
+            if self.instance and inspect.ismethod(getattr(self.task, item)):
                 return partial(getattr(self.task, item), self.instance)
             else:
                 return getattr(self.task, item)
+        else:
+            raise AttributeError
 
     def __call__(self, *args, **kwargs):
         """
