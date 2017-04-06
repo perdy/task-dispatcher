@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import inspect
 from functools import partial
 from functools import update_wrapper
 from typing import Callable
@@ -51,6 +52,7 @@ class BaseDecorator(object):
         self.args = args
         self.kwargs = kwargs
         self.task = None
+        self.instance = None
 
         if func is not None:
             # Full initialization decorator
@@ -73,7 +75,8 @@ class BaseDecorator(object):
         """
         Make it works with functions and methods.
         """
-        return partial(self, instance)
+        self.instance = instance
+        return self
 
     def __getattr__(self, item):
         """
@@ -81,7 +84,10 @@ class BaseDecorator(object):
         """
         # If looking for an unknown attr, delegates it to task __getattr__
         if self.task:
-            return getattr(self.task, item)
+            if self.instance and inspect.ismethod(getattr(self.task, item)):
+                return partial(getattr(self.task, item), self.instance)
+            else:
+                return getattr(self.task, item)
         else:
             raise AttributeError
 
@@ -91,7 +97,10 @@ class BaseDecorator(object):
         """
         if self.task:
             # Decorator behavior
-            return self.task(*args, **kwargs)
+            if self.instance:
+                return self.task(self.instance, *args, **kwargs)
+            else:
+                return self.task(*args, **kwargs)
         else:
             # Decorator is not initialized and now is giving the function to be decorated
             if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
