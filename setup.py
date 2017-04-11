@@ -76,7 +76,7 @@ _KEYWORDS = ' '.join([
 
 setup(
     name='task-dispatcher',
-    version='1.2.1',
+    version='1.2.2',
     description='Library that provides a system to generate tasks producers and consumers with ease.',
     long_description=_LONG_DESCRIPTION,
     author='José Antonio Perdiguero López',
