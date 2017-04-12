@@ -75,7 +75,7 @@ class TaskDispatcherCommand:
         Run a consumer process.
         """
         kwargs['queues'] = kwargs['queues'] or ['consumer']
-        kwargs['hostname'] = kwargs['hostname'] or 'consumer@task-dispatcher'
+        kwargs['hostname'] = kwargs['hostname'] or 'consumer@%h'
         worker = app.Worker(**kwargs)
         worker.start()
         return worker.exitcode
@@ -85,7 +85,7 @@ class TaskDispatcherCommand:
         Run a producer process.
         """
         kwargs['queues'] = kwargs['queues'] or ['producer']
-        kwargs['hostname'] = kwargs['hostname'] or 'producer@task-dispatcher'
+        kwargs['hostname'] = kwargs['hostname'] or 'producer@%h'
         worker = app.Worker(**kwargs)
         worker.start()
         return worker.exitcode
