@@ -1,0 +1,9 @@
+-r requirements.txt
+clinner
+coverage
+nose
+prospector
+pylint<1.7
+sphinx
+sphinx_rtd_theme
+tox
