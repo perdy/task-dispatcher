@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from _socket import gethostname
 
 from celery.bin.beat import beat as beat_bin
 from celery.bin.worker import worker as worker_bin
@@ -24,8 +25,8 @@ def consumer(*args, **kwargs):
     """
     Run a consumer process.
     """
-    kwargs['queues'] = kwargs['queues'] or ['consumer']
-    kwargs['hostname'] = kwargs['hostname'] or 'consumer@%h'
+    kwargs['queues'] = kwargs.get('queues') or ['consumer']
+    kwargs['hostname'] = kwargs.get('hostname') or 'consumer@{}'.format(gethostname())
     worker = app.Worker(**kwargs)
     worker.start()
     return worker.exitcode
@@ -36,8 +37,8 @@ def producer(*args, **kwargs):
     """
     Run a producer process.
     """
-    kwargs['queues'] = kwargs['queues'] or ['producer']
-    kwargs['hostname'] = kwargs['hostname'] or 'producer@%h'
+    kwargs['queues'] = kwargs.get('queues') or ['producer']
+    kwargs['hostname'] = kwargs.get('hostname') or 'producer@{}'.format(gethostname())
     worker = app.Worker(**kwargs)
     worker.start()
     return worker.exitcode
@@ -62,7 +63,7 @@ def show(*args, **kwargs):
     """
     Lists all producers and consumers registered.
     """
-    if kwargs['format'] == SHOW_YAML:
+    if kwargs.get('format') == SHOW_YAML:
         print(register.to_yaml())
     else:
         print(register.to_json())
