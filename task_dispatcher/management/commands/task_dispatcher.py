@@ -18,7 +18,7 @@ class Command(BaseCommand):
         self.command = TaskDispatcherCommand(parse_args=False)
 
     def add_arguments(self, parser):
-        self.command.add_arguments(parser=parser)
+        self.command._add_arguments(parser=parser)
 
     def handle(self, *args, **options):
         self.command.run(**options)

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
 
-from task_dispatcher.commands import TaskDispatcherCommand
+sys.path[0] = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+from task_dispatcher.commands import TaskDispatcherCommand  # noqa
 
 __all__ = ['main']
 
