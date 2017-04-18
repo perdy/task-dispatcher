@@ -4,10 +4,11 @@ from _socket import gethostname
 
 from celery.bin.beat import beat as beat_bin
 from celery.bin.worker import worker as worker_bin
-
 from clinner.command import command
 from clinner.exceptions import ImproperlyConfigured
 from clinner.run import Main
+from flower.command import FlowerCommand
+
 from task_dispatcher.celery import app
 from task_dispatcher.register import register
 from task_dispatcher.settings import settings
@@ -67,6 +68,16 @@ def show(*args, **kwargs):
         print(register.to_yaml())
     else:
         print(register.to_json())
+
+
+@command(parser_opts={'help': 'Run Flower monitoring tool.'})
+def flower(*args, **kwargs):
+    """
+    Run Flower monitoring tool.
+    """
+    args = ('flower',) + args
+    flower_cmd = FlowerCommand(app=app)
+    flower_cmd.execute_from_commandline(argv=args)
 
 
 class TaskDispatcherCommand(Main):

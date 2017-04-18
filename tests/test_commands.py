@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
 from unittest.case import TestCase
 from unittest.mock import patch, call, MagicMock
 
@@ -8,7 +7,7 @@ from clinner.exceptions import ImproperlyConfigured
 from clinner.settings import settings
 from nose.plugins.attrib import attr
 
-from task_dispatcher.commands import TaskDispatcherCommand, consumer, producer, scheduler, show
+from task_dispatcher.commands import TaskDispatcherCommand, consumer, producer, scheduler, show, flower
 from task_dispatcher.management.commands.task_dispatcher import Command
 
 
@@ -55,6 +54,21 @@ class TaskDispatcherCommandTestCase(TestCase):
             self.assertCountEqual(celery_app_mock.send_task.call_args_list, expected_calls)
 
         self.assertEqual(celery_app_mock.Beat.call_count, 1)
+
+    @attr(priority='mid', speed='fast')
+    @patch('task_dispatcher.commands.app')
+    def test_flower(self, celery_app_mock):
+        expected_calls = [call(app=celery_app_mock)]
+        expected_calls_cmdline = [call(argv=('flower',))]
+
+        with patch('task_dispatcher.commands.FlowerCommand') as flower_mock:
+            flower()
+
+        self.assertEqual(flower_mock.call_count, 1)
+        self.assertEqual(flower_mock.call_args_list, expected_calls)
+
+        self.assertEqual(flower_mock().execute_from_commandline.call_count, 1)
+        self.assertEqual(flower_mock().execute_from_commandline.call_args_list, expected_calls_cmdline)
 
     @attr(priority='mid', speed='fast')
     def test_show_yaml(self):
