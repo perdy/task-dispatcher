@@ -4,7 +4,7 @@ Task Dispatcher
 
 |build-status| |coverage|
 
-:Version: 1.3.0
+:Version: 1.4.0
 :Status: Production/Stable
 :Author: José Antonio Perdiguero López
 
