@@ -40,20 +40,65 @@ class TaskDispatcherCommandTestCase(TestCase):
         self.assertCountEqual(expected_queues, celery_app_mock.Worker.call_args[1]['queues'])
 
     @attr(priority='mid', speed='fast')
-    def test_scheduler(self):
-        task = 'foo'
+    def test_scheduler_deletes_old_startup_tasks(self):
+        task = 'foo.bar'
         task_args = (1, 2)
-        task_kwargs = {'foo', 'bar'}
-        expected_calls = [call(task, args=task_args, kwargs=task_kwargs)]
+        task_kwargs = {'foo': 'bar'}
+        scheduled_tasks = {'a': [{'name': task, 'id': '1'}]}
+        expected_calls = [call(['1'])]
 
         with patch('task_dispatcher.commands.app') as celery_app_mock, \
                 patch('task_dispatcher.commands.settings') as task_dispatcher_settings:
             task_dispatcher_settings.run_at_startup = [(task, task_args, task_kwargs)]
+            celery_app_mock.control.inspect().scheduled.return_value = scheduled_tasks
             scheduler()
 
-            self.assertCountEqual(celery_app_mock.send_task.call_args_list, expected_calls)
+            self.assertCountEqual(celery_app_mock.control.revoke.call_args_list, expected_calls)
 
-        self.assertEqual(celery_app_mock.Beat.call_count, 1)
+        self.assertEqual(celery_app_mock.Beat().run.call_count, 1)
+
+    @attr(priority='mid', speed='fast')
+    def test_scheduler_run_startup_tasks(self):
+        task = 'foo.bar'
+        task_args = (1, 2)
+        task_kwargs = {'foo': 'bar'}
+        scheduled_tasks = {'a': [{'name': task, 'id': '1'}]}
+        expected_revoke_calls = [call(['1'])]
+        expected_delay_calls = [call(1, 2, foo='bar')]
+        task_mock = MagicMock()
+
+        with patch('task_dispatcher.commands.app') as celery_app_mock, \
+                patch('task_dispatcher.commands.import_module') as import_mock, \
+                patch('task_dispatcher.commands.settings') as task_dispatcher_settings:
+            import_mock().bar = task_mock
+            task_dispatcher_settings.run_at_startup = [(task, task_args, task_kwargs)]
+            celery_app_mock.control.inspect().scheduled.return_value = scheduled_tasks
+            scheduler()
+
+            self.assertCountEqual(celery_app_mock.control.revoke.call_args_list, expected_revoke_calls)
+
+        self.assertCountEqual(task_mock.delay.call_args_list, expected_delay_calls)
+        self.assertEqual(celery_app_mock.Beat().run.call_count, 1)
+
+    @attr(priority='mid', speed='fast')
+    def test_scheduler_fails_running_startup_tasks(self):
+        task = 'foo'
+        task_args = (1, 2)
+        task_kwargs = {'foo': 'bar'}
+        scheduled_tasks = {'a': [{'name': task, 'id': '1'}]}
+        expected_calls = [call(['1'])]
+
+        with patch('task_dispatcher.commands.app') as celery_app_mock, \
+                patch('task_dispatcher.commands.logger') as logger_mock, \
+                patch('task_dispatcher.commands.settings') as task_dispatcher_settings:
+            task_dispatcher_settings.run_at_startup = [(task, task_args, task_kwargs)]
+            celery_app_mock.control.inspect().scheduled.return_value = scheduled_tasks
+            scheduler()
+
+            self.assertEqual(logger_mock.error.call_count, 1)
+            self.assertCountEqual(celery_app_mock.control.revoke.call_args_list, expected_calls)
+
+        self.assertEqual(celery_app_mock.Beat().run.call_count, 1)
 
     @attr(priority='mid', speed='fast')
     @patch('task_dispatcher.commands.app')

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
 from _socket import gethostname
+from importlib import import_module
 
+from celery import Celery
 from celery.bin.beat import beat as beat_bin
 from celery.bin.worker import worker as worker_bin
 from clinner.command import command
@@ -13,8 +16,10 @@ from task_dispatcher.celery import app
 from task_dispatcher.register import register
 from task_dispatcher.settings import settings
 
-_worker_bin = worker_bin(app=app)
-_beat_bin = beat_bin(app=app)
+logger = logging.getLogger(__name__)
+
+_worker_bin = worker_bin(app=Celery())
+_beat_bin = beat_bin(app=Celery())
 
 SHOW_JSON = 'json'
 SHOW_YAML = 'yaml'
@@ -52,8 +57,23 @@ def scheduler(*args, **kwargs):
     """
     beat = app.Beat(**kwargs)
 
-    for task, task_args, task_kwargs in settings.run_at_startup:
-        app.send_task(task, args=task_args, kwargs=task_kwargs)
+    # Remove old startup tasks
+    startup_tasks = [t[0] for t in settings.run_at_startup]
+    inspect = app.control.inspect()
+    scheduled = {(t['id'], t['name']) for tasks in inspect.scheduled().values() for t in tasks}
+    active = {(t['id'], t['name']) for tasks in inspect.active().values() for t in tasks}
+    reserved = {(t['id'], t['name']) for tasks in inspect.reserved().values() for t in tasks}
+    app.control.revoke([i for i, name in (scheduled | active | reserved) if name in startup_tasks])
+
+    # Load startup tasks
+    for task_path, task_args, task_kwargs in settings.run_at_startup:
+        try:
+            task_module, task_name = task_path.rsplit('.', 1)
+            task = getattr(import_module(task_module), task_name)
+        except:
+            logger.error('Cannot load task "%s"', task_path)
+        else:
+            task.delay(*task_args, **task_kwargs)
 
     return beat.run()
 
