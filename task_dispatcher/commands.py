@@ -60,9 +60,9 @@ def scheduler(*args, **kwargs):
     # Remove old startup tasks
     startup_tasks = [t[0] for t in settings.run_at_startup]
     inspect = app.control.inspect()
-    scheduled = {(t['id'], t['name']) for tasks in inspect.scheduled().values() for t in tasks}
-    active = {(t['id'], t['name']) for tasks in inspect.active().values() for t in tasks}
-    reserved = {(t['id'], t['name']) for tasks in inspect.reserved().values() for t in tasks}
+    scheduled = {(t['id'], t['name']) for tasks in inspect.scheduled().values() or [] for t in tasks}
+    active = {(t['id'], t['name']) for tasks in inspect.active().values() or [] for t in tasks}
+    reserved = {(t['id'], t['name']) for tasks in inspect.reserved().values() or [] for t in tasks}
     app.control.revoke([i for i, name in (scheduled | active | reserved) if name in startup_tasks])
 
     # Load startup tasks
