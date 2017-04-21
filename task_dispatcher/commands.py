@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 import logging
 import os
 from _socket import gethostname
@@ -60,10 +61,13 @@ def scheduler(*args, **kwargs):
     # Remove old startup tasks
     startup_tasks = [t[0] for t in settings.run_at_startup]
     inspect = app.control.inspect()
-    scheduled = {(t['id'], t['name']) for tasks in inspect.scheduled().values() or [] for t in tasks}
-    active = {(t['id'], t['name']) for tasks in inspect.active().values() or [] for t in tasks}
-    reserved = {(t['id'], t['name']) for tasks in inspect.reserved().values() or [] for t in tasks}
-    app.control.revoke([i for i, name in (scheduled | active | reserved) if name in startup_tasks])
+    tasks = itertools.chain(
+        (t for worker_tasks in (inspect.scheduled().values() if inspect.scheduled() else []) for t in worker_tasks),
+        (t for worker_tasks in (inspect.active().values() if inspect.active() else []) for t in worker_tasks),
+        (t for worker_tasks in (inspect.reserved().values() if inspect.reserved() else []) for t in worker_tasks),
+    )
+    tasks = {(t['id'], t['name']) for t in tasks}
+    app.control.revoke([id_ for id_, name in tasks if name in startup_tasks])
 
     # Load startup tasks
     for task_path, task_args, task_kwargs in settings.run_at_startup:
