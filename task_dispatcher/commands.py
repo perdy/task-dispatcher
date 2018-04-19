@@ -113,8 +113,8 @@ class TaskDispatcherCommand(Main):
                   'well as some utilities.'
 
     def inject_app_settings(self):
-        if self.settings:
-            os.environ['TASK_DISPATCHER_SETTINGS'] = self.settings
+        if self.args.settings:
+            os.environ['TASK_DISPATCHER_SETTINGS'] = self.args.settings
 
         if 'TASK_DISPATCHER_SETTINGS' not in os.environ:
             raise ImproperlyConfigured('Settings not defined')
