@@ -4,9 +4,9 @@ from collections import OrderedDict
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
+import pytest
 import yaml
 from celery.app.task import Task
-from nose.plugins.attrib import attr
 
 from task_dispatcher.decorators import consumer, producer
 from task_dispatcher.register import Register, TaskRegister
@@ -68,35 +68,35 @@ class TaskRegisterTestCase(TestCase):
     def setUp(self):
         self.register = TaskRegister()
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_register_producer(self):
         self.register.register(self.tasks['producer'])
 
         self.assertIn(self.tasks['producer'], self.register.producers.values())
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_register_consumer(self):
         self.register.register(self.tasks['consumer'])
 
         self.assertIn(self.tasks['consumer'], self.register.consumers.values())
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_register_unknown(self):
         self.assertRaises(TypeError, self.register.register, False)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_consumers(self):
         self.register.register(self.tasks['consumer'])
 
         self.assertIn(self.tasks['consumer'], self.register.consumers.values())
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_producers(self):
         self.register.register(self.tasks['producer'])
 
         self.assertIn(self.tasks['producer'], self.register.producers.values())
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_to_dict(self):
         expected_result = {
             'consumers': {
@@ -122,7 +122,7 @@ class TaskRegisterTestCase(TestCase):
 
         self.assertDictEqual(expected_result, result)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_to_json(self):
         expected_result = json.dumps(OrderedDict(sorted({
             'consumers': {
@@ -148,7 +148,7 @@ class TaskRegisterTestCase(TestCase):
 
         self.assertEqual(expected_result, result)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_to_yaml(self):
         expected_result = yaml.safe_dump({
             'consumers': {

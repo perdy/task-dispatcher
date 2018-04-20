@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+celery = "*"
+clinner = "~=1.9.3"
+flower = "*"
+coverage = "*"
+prospector = "*"
+pylint = "*"
+tox = "*"
+PyYAML = "*"
+Sphinx = "*"
+sphinx_rtd_theme = "*"
+pytest = "*"
+pytest-xdist = "*"
+pytest-cov = "*"
+
+[packages]
+celery = "*"
+clinner = "~=1.9.3"
+flower = "*"
+PyYAML = "*"
+
+[requires]
+python_version = "3.6"

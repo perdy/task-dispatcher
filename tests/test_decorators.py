@@ -2,8 +2,8 @@
 from unittest.case import TestCase
 from unittest.mock import MagicMock, patch, call
 
+import pytest
 from celery.app.task import Task
-from nose.plugins.attrib import attr
 
 from task_dispatcher.decorators import BaseDecorator
 
@@ -21,13 +21,13 @@ class BaseDecoratorTestCase(TestCase):
         self.task_mock.__module__ = 'module'
         self.task_mock.name = 'task_name'
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_full_initialize_without_args(self):
         with patch.object(BaseDecorator, '_decorate') as decorate_mock:
             BaseDecorator(self.task_mock)
             self.assertEqual(decorate_mock.call_count, 1)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_partial_initialize_with_args(self):
         with patch.object(BaseDecorator, '_decorate') as decorate_mock:
             # Partial initialization to pass description
@@ -40,7 +40,7 @@ class BaseDecoratorTestCase(TestCase):
 
             self.assertEqual(decorate_mock.call_count, 1)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_get(self):
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
@@ -51,7 +51,7 @@ class BaseDecoratorTestCase(TestCase):
         self.assertTrue(isinstance(decorator.__get__(decorator), BaseDecorator))
         self.assertEqual(decorator.instance, decorator)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_getattr_decorator_attr(self):
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
@@ -64,7 +64,7 @@ class BaseDecoratorTestCase(TestCase):
 
         self.assertEqual(expected_description, description)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_getattr_task_attr(self):
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
@@ -78,7 +78,7 @@ class BaseDecoratorTestCase(TestCase):
 
         self.assertEqual(expected_name, name)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_getattr_task_method(self):
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
@@ -91,7 +91,7 @@ class BaseDecoratorTestCase(TestCase):
 
         self.assertEqual(expected_name, name)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_decorate(self):
         expected_task_name = '.'.join([self.task_mock.__module__, self.task_mock.__qualname__])
 
@@ -106,7 +106,7 @@ class BaseDecoratorTestCase(TestCase):
             self.assertIn('name', celery_app_mock.task.call_args[1])
             self.assertEqual(celery_app_mock.task.call_args[1]['name'], expected_task_name)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_call(self):
         expected_call_args = [call('foo', bar='bar')]
 
@@ -123,7 +123,7 @@ class BaseDecoratorTestCase(TestCase):
             self.assertEqual(self.task_mock.call_count, 1)
             self.assertCountEqual(expected_call_args, self.task_mock.call_args_list)
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_call_not_initialized(self):
         with patch('task_dispatcher.decorators.app') as celery_app_mock, \
                 patch('task_dispatcher.decorators.register') as register_mock:
@@ -134,7 +134,7 @@ class BaseDecoratorTestCase(TestCase):
             # Try to call before full initialization
             self.assertRaises(ValueError, decorator, 'foo', bar='bar')
 
-    @attr(priority='high', speed='fast')
+    @pytest.mark.high
     def test_getattr_without_task(self):
         decorator = BaseDecorator()
 

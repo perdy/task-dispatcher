@@ -1,4 +1,0 @@
-Celery>=4.0
-clinner~=1.9.3
-pyyaml>=3.0
-flower>=0.9
