@@ -68,9 +68,9 @@ _KEYWORDS = ' '.join([
     'scheduler',
 ])
 
-name = 'task-dispatcher'
+package_name = 'task_dispatcher'
 setup(
-    name=name,
+    name='task-dispatcher',
     version='1.4.4',
     description='Library that provides a system to generate tasks producers and consumers with ease.',
     long_description=_LONG_DESCRIPTION,
@@ -80,8 +80,8 @@ setup(
     maintainer_email='perdy.hh@gmail.com',
     url='https://github.com/PeRDy/task-dispatcher',
     download_url='https://github.com/PeRDy/task-dispatcher',
-    packages=get_packages(name),
-    packages_data=get_package_data(name),
+    packages=get_packages(package_name),
+    packages_data=get_package_data(package_name),
     include_package_data=True,
     install_requires=[
         "Celery",
