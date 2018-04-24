@@ -71,7 +71,7 @@ _KEYWORDS = ' '.join([
 package_name = 'task_dispatcher'
 setup(
     name='task-dispatcher',
-    version='1.4.4',
+    version='1.4.5',
     description='Library that provides a system to generate tasks producers and consumers with ease.',
     long_description=_LONG_DESCRIPTION,
     author='José Antonio Perdiguero López',
